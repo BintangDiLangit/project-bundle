@@ -1,0 +1,26 @@
+[
+  {
+    "wallet": "CJzugz6RAX6mPoyJXkeEE91hB9GmrsLFbLETtkXSmCWK",
+    "private_key": "3c2fhcwqiiFJftrsQ2gBt4zEES7NseNVKYJtFQtayNDyEUK4GAyB7kNUTjm5ZHAGPeh4pWhT4xxV85CgEzNgTc2T"
+  },
+  {
+    "wallet": "9R25D9dSRgs74ezTh3AqGUWFyk4KXjL7QTBY4SzjzrUG",
+    "private_key": "5x6hGmYJMckgFMtdGwZP59DGiCgqoBLKBTg9RFb491vZJTwnLSzMEXGNbdcL4nJiJAsXpPgcaGTS47AC5RewCFDJ"
+  },
+  {
+    "wallet": "EqxBqEWEh18Hgi44ThDkbBpLmW2rFZ4V7CHydijx6ZHT",
+    "private_key": "Tps6j9NUnYjq5KbmVNJfgKTZ8LLN6qWbbrYJuY4YcwgA1vnVMpCgznvFRMoXxcL342cU2Z4jW4ioxMeSiS4qQp1"
+  },
+  {
+    "wallet": "EvS6UVEqFShF9zaJHFhLVF1Mcv1s1yvC6HbNUWg1QMrp",
+    "private_key": "ERPWeMD2GcbLY33vR13946L8KzDRgy9aaaAUFDvxh7gVp5upccQqiAdVorbessgnTRYBHGosq5sfb7NGyavVp2k"
+  },
+  {
+    "wallet": "D3GNdKZVCGJRvxwPN6K8Hq2EgYXFrqC4pFzEKSYBMz3Q",
+    "private_key": "5qH73FkzD5YickxEMFZjJBSbT5xfNhTf8a4qSK8jwVTLCqx3dWfGmSJ3Cvsw4nS5aQx8YoTzFoEqyy89qekeaRzE"
+  },
+  {
+    "wallet": "fJovnrMMLFWZuBHqkmNmpzpMV98HJq3jX1xhoRyjFcv",
+    "private_key": "4Xp8z97Nx1DrMvPVjP4Fe3F8eezW2eRSDnVP4KJmAaP3Qy1fWMHFn6CXtAUaT3bKoQG5U8fgH9xSREYdYrXKNXVt"
+  }
+]
