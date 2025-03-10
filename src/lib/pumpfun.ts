@@ -10,7 +10,9 @@ import {
 import rpc from "./rpc";
 import {
   ASSOCIATED_TOKEN_PROGRAM_ID,
+  createAssociatedTokenAccountIdempotentInstruction,
   getAssociatedTokenAddressSync,
+  getMinimumBalanceForRentExemptAccount,
   TOKEN_PROGRAM_ID,
 } from "@solana/spl-token";
 import BN from "bn.js";
@@ -302,5 +304,68 @@ export default class Pumpfun {
     }
 
     return sequences;
+  }
+
+  public async sellAndReBuy(
+    curve: Awaited<ReturnType<Pumpfun["curve"]>>,
+    mint: PublicKey,
+    origin: PublicKey,
+    selling: BN,
+    destinations: {
+      middle: PublicKey;
+      address: PublicKey;
+      buying: BN;
+    }[]
+  ) {
+    const rent = await getMinimumBalanceForRentExemptAccount(rpc);
+    const sell = await this.sell(origin, mint, selling, {
+      minSolOutput: 0,
+      curve,
+    });
+    const buys = await Promise.all(
+      destinations.map(async (destination) => {
+        const lamports = this.calculateLamportsByToken(
+          curve,
+          destination.buying,
+          0
+        );
+        const swap = await this.buy(
+          destination.address,
+          mint,
+          destination.buying,
+          {
+            maxSolCost: new BN(Math.round(lamports.toNumber() * 1.02)),
+            curve,
+          }
+        );
+        const associatedToken = getAssociatedTokenAddressSync(
+          mint,
+          destination.address
+        );
+        const needed = Math.round(lamports.toNumber() * 1.02) + rent * 2;
+
+        return [
+          SystemProgram.transfer({
+            fromPubkey: origin,
+            toPubkey: destination.middle,
+            lamports: needed,
+          }),
+          SystemProgram.transfer({
+            fromPubkey: destination.middle,
+            toPubkey: destination.address,
+            lamports: needed,
+          }),
+          createAssociatedTokenAccountIdempotentInstruction(
+            destination.address,
+            associatedToken,
+            destination.address,
+            mint
+          ),
+          swap,
+        ];
+      })
+    );
+
+    return [sell, ...buys.flat()];
   }
 }
