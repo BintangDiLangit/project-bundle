@@ -6,10 +6,10 @@ import {
   VersionedTransaction,
 } from "@solana/web3.js";
 import { readFileSync } from "node:fs";
-import base58 from "./lib/base58";
-import Jito from "./lib/jito";
-import Pumpfun from "./lib/pumpfun";
-import connection, { getLatestBlockhash } from "./lib/rpc";
+import base58 from "../lib/base58";
+import Jito from "../lib/jito";
+import Pumpfun from "../lib/pumpfun";
+import connection, { getLatestBlockhash } from "../lib/rpc";
 import {
   createAssociatedTokenAccountIdempotentInstruction,
   getAssociatedTokenAddressSync,
@@ -20,7 +20,7 @@ const name = "Bundler";
 const symbol = "BUND";
 
 const upload = async () => {
-  const file = readFileSync("logo.png");
+  const file = readFileSync("../../public/logo.png");
   const form = new FormData();
 
   form.append("file", new Blob([file], { type: "image/png" })),
@@ -56,6 +56,7 @@ const main = async () => {
   const curve = pumpfun.initialCurve(); // initial bonding curve state
   const mint = Keypair.generate(); // random contract address token
   // at least have 0.05 SOL
+  console.log("test");
   const devWallet = Keypair.fromSecretKey(
     base58.decode(process.env.DEV_WALLET!)
   );

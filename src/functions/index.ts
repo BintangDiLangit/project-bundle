@@ -7,10 +7,10 @@ import {
   VersionedTransaction,
 } from "@solana/web3.js";
 import { readFileSync } from "node:fs";
-import base58 from "./lib/base58";
-import Jito from "./lib/jito";
-import Pumpfun from "./lib/pumpfun";
-import connection, { getLatestBlockhash } from "./lib/rpc";
+import base58 from "../lib/base58";
+import Jito from "../lib/jito";
+import Pumpfun from "../lib/pumpfun";
+import connection, { getLatestBlockhash } from "../lib/rpc";
 import {
   createAssociatedTokenAccountIdempotentInstruction,
   getAssociatedTokenAddressSync,

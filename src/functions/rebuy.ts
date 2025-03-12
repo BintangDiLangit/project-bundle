@@ -8,13 +8,13 @@ import {
   TransactionMessage,
   VersionedTransaction,
 } from "@solana/web3.js";
-import Pumpfun from "./lib/pumpfun";
-import Raydium, { MarketNotFoundInRaydium } from "./lib/raydium";
-import base58 from "./lib/base58";
+import Pumpfun from "../lib/pumpfun";
+import Raydium, { MarketNotFoundInRaydium } from "../lib/raydium";
+import base58 from "../lib/base58";
 import { createHash } from "node:crypto";
 import { getAssociatedTokenAddressSync } from "@solana/spl-token";
-import Lookup from "./lib/lookup";
-import rpc from "./lib/rpc";
+import Lookup from "../lib/lookup";
+import rpc from "../lib/rpc";
 import BN from "bn.js";
 
 const main = async () => {
@@ -29,7 +29,7 @@ const main = async () => {
       getAssociatedTokenAddressSync(mint, origin.publicKey)
     )
     .then((r) => r.value.amount);
-  // if token is on pumpfun max buyers in single tx is 3
+  // if token is on pumpfun max buyers in single tx is 3`77776666tftggfff
   // if token is on raydium max buyers in single tx is 2
   const buyers = [
     Keypair.fromSecretKey(base58.decode("")),

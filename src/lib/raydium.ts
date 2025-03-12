@@ -21,7 +21,7 @@ import {
   liquidityStateV4Layout,
   OPEN_BOOK_PROGRAM,
 } from "@raydium-io/raydium-sdk-v2";
-import idl, { RaydiumIDL } from "./raydium.idl.ts";
+import idl, { RaydiumIDL } from "./raydium.idl.js";
 import rpc from "./rpc.ts";
 import BN from "bn.js";
 
@@ -110,14 +110,12 @@ export default class Raydium {
             memcmp: {
               offset: liquidityStateV4Layout.offsetOf("baseMint"),
               bytes: base.toBuffer().toString("base64"),
-              encoding: "base64",
             },
           },
           {
             memcmp: {
               offset: liquidityStateV4Layout.offsetOf("quoteMint"),
               bytes: mint.toBuffer().toString("base64"),
-              encoding: "base64",
             },
           },
         ],

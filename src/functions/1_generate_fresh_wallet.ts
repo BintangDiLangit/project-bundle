@@ -9,6 +9,7 @@ import {
 import bs58 from "bs58";
 import * as dotenv from "dotenv";
 import * as fs from "fs";
+import { getConfig } from "./config";
 
 // Define the parameters for generating and funding wallets.
 interface GenerateWalletParams {
@@ -21,36 +22,42 @@ interface GenerateWalletParams {
 // Load environment variables from a .env file (if needed)
 dotenv.config();
 
-async function generateAndFundWallets(params: GenerateWalletParams) {
+export async function generateAndFundWallets(params: GenerateWalletParams) {
   const {
-    fundingSecret,
     amountSol,
     count,
-    outputFile = "wallets.json",
+    outputFile = "../../data/bundle_wallets.json",
   } = params;
 
   // Connect to Solana devnet (change URL if you want Mainnet Beta)
   const connection = new Connection(
-    "https://api.mainnet-beta.solana.com",
+    getConfig().RPC_URL ?? "https://api.mainnet-beta.solana.com",
     "confirmed"
   );
 
   // Load the funding wallet from the base58-encoded secret key.
-  const fundingWallet = Keypair.fromSecretKey(bs58.decode(fundingSecret));
+  const fundingWallet = Keypair.fromSecretKey(
+    bs58.decode(getConfig().PK_FOUNDER)
+  );
+
   console.log("Funding wallet public key:", fundingWallet.publicKey.toBase58());
 
   // Calculate lamports to send.
   const lamportsToSend = amountSol * LAMPORTS_PER_SOL;
 
   // Read existing wallet entries if the file exists.
+  // Read existing wallet entries if the file exists.
   const filePath = outputFile;
-  let walletEntries: { wallet: string; private_key: string }[] = [];
+  let walletEntries: { public_key: string; private_key: string }[] = [];
+
   if (fs.existsSync(filePath)) {
     try {
-      const fileContent = fs.readFileSync(filePath, "utf8");
-      walletEntries = JSON.parse(fileContent);
-      if (!Array.isArray(walletEntries)) {
-        walletEntries = [];
+      const fileContent = fs.readFileSync(filePath, "utf8").trim();
+      if (fileContent) {
+        walletEntries = JSON.parse(fileContent);
+        if (!Array.isArray(walletEntries)) {
+          walletEntries = [];
+        }
       }
     } catch (err) {
       console.error("Error reading existing wallet file, starting fresh:", err);
@@ -103,7 +110,7 @@ async function generateAndFundWallets(params: GenerateWalletParams) {
 
     // Append the new wallet details to our list.
     walletEntries.push({
-      wallet: publicKey,
+      public_key: publicKey,
       private_key: secretKeyBase58,
     });
   }
