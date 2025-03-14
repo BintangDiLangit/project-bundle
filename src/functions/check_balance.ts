@@ -20,7 +20,10 @@ export const checkBalance = async ({ privateKey }: { privateKey: string }) => {
     console.log(
       `Balance of ${wallet.publicKey.toBase58()}: ${balance} lamports`
     );
-    return balance;
+    return {
+      balance: balance,
+      pubkey: wallet.publicKey.toBase58(),
+    };
   } catch (error) {
     console.error("Error decoding private key:", error);
     return null;

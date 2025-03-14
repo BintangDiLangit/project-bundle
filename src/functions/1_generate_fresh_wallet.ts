@@ -10,6 +10,7 @@ import bs58 from "bs58";
 import * as dotenv from "dotenv";
 import * as fs from "fs";
 import { getConfig } from "./config";
+import path from "path";
 
 // Define the parameters for generating and funding wallets.
 interface GenerateWalletParams {
@@ -21,13 +22,10 @@ interface GenerateWalletParams {
 
 // Load environment variables from a .env file (if needed)
 dotenv.config();
+const dirFile = path.resolve(__dirname, "../../data/bundle_wallets.json");
 
 export async function generateAndFundWallets(params: GenerateWalletParams) {
-  const {
-    amountSol,
-    count,
-    outputFile = "../../data/bundle_wallets.json",
-  } = params;
+  const { amountSol, count, outputFile = dirFile } = params;
 
   // Connect to Solana devnet (change URL if you want Mainnet Beta)
   const connection = new Connection(

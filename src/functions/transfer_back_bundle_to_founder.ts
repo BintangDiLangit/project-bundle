@@ -29,8 +29,11 @@ export async function transferBackToFounder() {
 
   for (const wallet of bundleWallets) {
     try {
-      const balance =
-        (await checkBalance({ privateKey: wallet.private_key })) ?? 0;
+      const { balance } = (await checkBalance({
+        privateKey: wallet.private_key,
+      })) || { balance: 0 };
+
+      console.log(balance);
 
       if (balance > 0) {
         const bundleWalletKeypair = Keypair.fromSecretKey(

@@ -170,7 +170,7 @@ export default class Pumpfun {
     uri: string
   ) {
     return await this.program.methods
-      .create(name, symbol, uri)
+      .create(name, symbol, uri, user)
       .accounts({
         global: this.global,
         user,

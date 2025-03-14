@@ -1,12 +1,14 @@
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import path from "path";
 
-const name = "Bundler1";
-const symbol = "BUND1";
+const name = "Bundler2";
+const symbol = "BUND2";
 const METADATA_PATH = path.join(__dirname, "../../data/metadata.json");
 
 const upload = async () => {
-  const file = readFileSync("../../public/logo.png");
+  const LOGO_PATH = path.join(__dirname, "..", "..", "public", "logo.png");
+
+  const file = readFileSync(LOGO_PATH);
 
   const form = new FormData();
 
@@ -39,8 +41,17 @@ export const uploadMetaData = async () => {
   let metadata = [];
   if (existsSync(METADATA_PATH)) {
     try {
-      metadata = JSON.parse(readFileSync(METADATA_PATH, "utf-8"));
-      if (!Array.isArray(metadata)) {
+      const fileContent = readFileSync(METADATA_PATH, "utf-8").trim();
+      if (fileContent) {
+        metadata = JSON.parse(fileContent);
+        if (!Array.isArray(metadata)) {
+          console.error("Invalid metadata format, initializing new array.");
+          metadata = [];
+        }
+      } else {
+        console.warn(
+          "metadata.json is empty, initializing new metadata array."
+        );
         metadata = [];
       }
     } catch (error) {
@@ -72,7 +83,12 @@ export const getUploadedMetadata = (): {
   }
 
   try {
-    const metadata = JSON.parse(readFileSync(METADATA_PATH, "utf-8"));
+    const fileContent = readFileSync(METADATA_PATH, "utf-8").trim();
+    if (!fileContent) {
+      console.warn("metadata.json is empty, returning empty array.");
+      return [];
+    }
+    const metadata = JSON.parse(fileContent);
     if (!Array.isArray(metadata)) {
       console.error("Invalid metadata format, returning empty array.");
       return [];
@@ -84,4 +100,4 @@ export const getUploadedMetadata = (): {
   }
 };
 
-// uploadMetaData();
+uploadMetaData();

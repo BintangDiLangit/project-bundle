@@ -24,14 +24,17 @@ import {
 } from "@solana/spl-token";
 import dotenv from "dotenv";
 import { sleep } from "./utils";
+import { getConfig } from "../functions/config";
 
 dotenv.config();
 
+const config = getConfig();
+
 export const connection = new Connection(
-  process.env.RPC_URL || clusterApiUrl("mainnet-beta"),
+  config.RPC_URL || clusterApiUrl("mainnet-beta"),
   {
     commitment: "confirmed",
-    wsEndpoint: process.env.RPC_WSS!,
+    wsEndpoint: config.RPC_WSS,
   }
 );
 

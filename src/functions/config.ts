@@ -8,6 +8,7 @@ interface Config {
   PK_FOUNDER: string;
   PK_DEV: string;
   RPC_URL: string;
+  RPC_WSS: string;
 }
 
 /**
@@ -23,7 +24,7 @@ export function getConfig(): Config {
   } catch (error) {
     console.error("Error reading config:", error);
   }
-  return { PK_FOUNDER: "", PK_DEV: "", RPC_URL: "" };
+  return { PK_FOUNDER: "", PK_DEV: "", RPC_URL: "", RPC_WSS: "" };
 }
 
 /**

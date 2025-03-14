@@ -19,24 +19,69 @@ interface TransferSolBundle {
   amountSol: number;
 }
 
+const MAX_RETRIES = 5; // Maximum number of retries
+const BASE_DELAY_MS = 500; // Base delay for exponential backoff
+
+async function getLatestBlockhashWithRetry(retries = 0): Promise<string> {
+  try {
+    return (await connection.getLatestBlockhash()).blockhash;
+  } catch (error: any) {
+    if (
+      retries < MAX_RETRIES &&
+      error.message.includes("429 Too Many Requests")
+    ) {
+      const delay = BASE_DELAY_MS * Math.pow(2, retries);
+      console.warn(`Too many requests, retrying in ${delay}ms...`);
+      await new Promise((resolve) => setTimeout(resolve, delay));
+      return getLatestBlockhashWithRetry(retries + 1);
+    } else {
+      throw new Error("Failed to get recent blockhash after retries");
+    }
+  }
+}
+
+async function sendTransactionWithRetry(
+  transaction: Transaction,
+  fundingWallet: Keypair,
+  retries = 0
+): Promise<string> {
+  try {
+    return await sendAndConfirmTransaction(connection, transaction, [
+      fundingWallet,
+    ]);
+  } catch (error: any) {
+    if (
+      retries < MAX_RETRIES &&
+      error.message.includes("429 Too Many Requests")
+    ) {
+      const delay = BASE_DELAY_MS * Math.pow(2, retries);
+      console.warn(`Too many requests, retrying transaction in ${delay}ms...`);
+      await new Promise((resolve) => setTimeout(resolve, delay));
+      return sendTransactionWithRetry(transaction, fundingWallet, retries + 1);
+    } else {
+      throw new Error("Failed to send transaction after retries");
+    }
+  }
+}
+
 export async function transferSolToBundle(params: TransferSolBundle) {
   const { amountSol } = params;
   const config = getConfig();
-  console.log(config);
-
-  const bundleWallets = getBundleWallets();
 
   if (!config.PK_FOUNDER) {
     console.error("Founder private key not found in config.json");
     return;
   }
 
+  const bundleWallets = getBundleWallets();
   if (bundleWallets.length === 0) {
     console.error("No bundle wallets found in wallets.json");
     return;
   }
 
-  const balance = (await checkBalance({ privateKey: config.PK_FOUNDER })) ?? 0;
+  const { balance } = (await checkBalance({
+    privateKey: config.PK_FOUNDER,
+  })) || { balance: 0 };
 
   if (balance < amountSol * LAMPORTS_PER_SOL) {
     console.error("Insufficient balance");
@@ -47,16 +92,11 @@ export async function transferSolToBundle(params: TransferSolBundle) {
   const fundingWallet = Keypair.fromSecretKey(base58.decode(config.PK_FOUNDER));
 
   const solPerWallet = amountSol / bundleWallets.length;
-  console.log("Sol per wallet : " + solPerWallet);
   const lamportsPerWallet = solPerWallet * LAMPORTS_PER_SOL;
-  console.log("Lamports per wallet : " + lamportsPerWallet);
 
   if (lamportsPerWallet > 0) {
     for (const wallet of bundleWallets) {
-      // console.log(wallet.public_key);
-
       const recipientPubkey = new PublicKey(wallet.public_key);
-      // console.log(recipientPubkey);
 
       const transaction = new Transaction();
       transaction.add(
@@ -67,18 +107,15 @@ export async function transferSolToBundle(params: TransferSolBundle) {
         })
       );
 
-      // Set transaction properties.
+      // Retry fetching blockhash if needed
       transaction.feePayer = fundingWallet.publicKey;
-      transaction.recentBlockhash = (
-        await connection.getLatestBlockhash()
-      ).blockhash;
+      transaction.recentBlockhash = await getLatestBlockhashWithRetry();
 
-      // Send the transaction using the funding wallet.
+      // Retry sending transaction if needed
       try {
-        const signature = await sendAndConfirmTransaction(
-          connection,
+        const signature = await sendTransactionWithRetry(
           transaction,
-          [fundingWallet]
+          fundingWallet
         );
         console.log(
           `Funded wallet ${recipientPubkey.toBase58()} with ${solPerWallet} SOL. Signature: ${signature}`
@@ -95,7 +132,7 @@ export async function transferSolToBundle(params: TransferSolBundle) {
 
 // Example function call
 const params: TransferSolBundle = {
-  amountSol: 0.01, // Example amount to be distributed
+  amountSol: 0.01,
 };
 
 transferSolToBundle(params);

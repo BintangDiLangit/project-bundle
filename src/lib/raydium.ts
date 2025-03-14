@@ -21,7 +21,7 @@ import {
   liquidityStateV4Layout,
   OPEN_BOOK_PROGRAM,
 } from "@raydium-io/raydium-sdk-v2";
-import idl, { RaydiumIDL } from "./raydium.idl.js";
+import idl, { RaydiumIDL } from "./raydium.idl";
 import rpc from "./rpc.ts";
 import BN from "bn.js";
 
