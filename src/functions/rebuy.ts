@@ -19,13 +19,20 @@ import BN from "bn.js";
 import { getBundleWallets } from "./get_bundle_wallet";
 import { getConfig } from "./config";
 
+/**
+ * Khusus Dev Wallet, dia sell 100% dan dia nge buy di wallet A (+ TF Solnya),
+ * dari A itu lanjut lagi menyesuaikan yang pumpfun cabang 3 atau raydium cabang 2
+ *
+ * dev wallet di fase pertama, itu pake jito
+ */
+
 interface RebuyProps {
   publicMint: string;
 }
 
 export const rebuy = async ({ publicMint }: RebuyProps) => {
   // Mint is the contract address for the token
-  const mint = new PublicKey(publicMint);
+  const mint = new PublicKey("22tMTGthb4xv5ugzVvp8ykNfVvzhV2Qg33jgoQPKgTV5");
   const pumpfun = new Pumpfun();
   const raydium = new Raydium();
 
@@ -41,6 +48,12 @@ export const rebuy = async ({ publicMint }: RebuyProps) => {
   const selling = await rpc
     .getTokenAccountBalance(associatedTokenAccount)
     .then((r) => r.value.amount);
+
+  if (Number(selling) === 0) {
+    throw new Error(
+      "No tokens available to sell. Please ensure the origin wallet is funded with tokens."
+    );
+  }
 
   // Get bundle wallets (buyers)
   const bundleWallets = getBundleWallets();
@@ -215,3 +228,5 @@ export const rebuy = async ({ publicMint }: RebuyProps) => {
     }
   }
 };
+
+rebuy({ publicMint: "22tMTGthb4xv5ugzVvp8ykNfVvzhV2Qg33jgoQPKgTV5" });

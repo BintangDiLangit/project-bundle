@@ -78,6 +78,12 @@ const launch = async () => {
     console.log(`Mint data saved to: ${mintFilePath}`);
 
     const buying = 0.0001e9;
+
+    // Dev wallet tidak melakukan bundle 0
+    // Only bundle wallet
+
+    // harusnya dev wallet / dev buy itu ikut signaturenya 3PabxS / harus sama dengan mint
+    // Dev wallet ngerebuy diantara bundle wallet yang lain (lebih baik di near the end wallet) ikut sampe phase end
     const buyers = [
       {
         secretKey: config.PK_DEV,
